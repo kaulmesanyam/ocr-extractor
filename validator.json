@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Car Insurance Policy Extraction Schema",
+  "description": "Schema for extracting crucial information from car insurance policy documents to facilitate generating quotes from other insurers.",
+  "type": "object",
+  "properties": {
+    "policyholder": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the insured/policyholder."
+        },
+        "address": {
+          "type": "string",
+          "description": "Postal or residential address."
+        },
+        "occupation": {
+          "type": "string",
+          "description": "Profession or business type."
+        },
+        "namedDrivers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of specified drivers."
+        }
+      },
+      "required": ["name", "address", "occupation"]
+    },
+    "vehicle": {
+      "type": "object",
+      "properties": {
+        "registrationMark": {
+          "type": "string",
+          "description": "Vehicle license plate number."
+        },
+        "makeAndModel": {
+          "type": "string",
+          "description": "Manufacturer and specific model."
+        },
+        "yearOfManufacture": {
+          "type": "integer",
+          "description": "Year of manufacture"
+        },
+        "chassisNumber": {
+          "type": "string",
+          "description": "Vehicle Identification Number (VIN)."
+        },
+        "engineNumber": {
+          "type": "string",
+          "description": "Engine serial number."
+        },
+        "cubicCapacity": {
+          "type": "number",
+          "description": "Engine size in cubic centimeters."
+        },
+        "seatingCapacity": {
+          "type": "integer",
+          "description": "Number of seats including driver."
+        },
+        "bodyType": {
+          "type": "string",
+          "description": "Vehicle style (e.g., saloon, SUV)."
+        },
+        "estimatedValue": {
+          "type": "number",
+          "description": "Insured's declared value in HKD."
+        }
+      },
+      "required": ["registrationMark", "makeAndModel", "yearOfManufacture", "chassisNumber", "seatingCapacity", "bodyType"]
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "typeOfCover": {
+          "type": "string",
+          "description": "Level of insurance (e.g., third party only)."
+        },
+        "liabilityLimits": {
+          "type": "object",
+          "properties": {
+            "bodilyInjury": {
+              "type": "number"
+            },
+            "propertyDamage": {
+              "type": "number"
+            }
+          },
+          "required": ["bodilyInjury", "propertyDamage"],
+          "description": "Maximum payout for third-party claims."
+        },
+        "excess": {
+          "type": "object",
+          "properties": {
+            "thirdPartyProperty": {
+              "type": "number"
+            },
+            "youngDriver": {
+              "type": "number"
+            },
+            "inexperiencedDriver": {
+              "type": "number"
+            },
+            "unnamedDriver": {
+              "type": "number"
+            }
+          },
+          "description": "Deductible amounts."
+        },
+        "limitationsOnUse": {
+          "type": "string",
+          "description": "Restrictions on vehicle use."
+        },
+        "authorizedDrivers": {
+          "type": "string",
+          "description": "Classes of persons allowed to drive."
+        }
+      },
+      "required": ["typeOfCover", "liabilityLimits", "excess", "limitationsOnUse", "authorizedDrivers"]
+    },
+    "premiumAndDiscounts": {
+      "type": "object",
+      "properties": {
+        "premiumAmount": {
+          "type": "number",
+          "description": "Base premium in HKD."
+        },
+        "totalPayable": {
+          "type": "number",
+          "description": "Final amount including levies."
+        },
+        "noClaimDiscount": {
+          "type": "number",
+          "description": "Percentage discount for claim-free history."
+        },
+        "levies": {
+          "type": "object",
+          "properties": {
+            "mib": {
+              "type": "number"
+            },
+            "ia": {
+              "type": ["number", "string"]
+            }
+          },
+          "description": "Additional charges."
+        }
+      },
+      "required": ["premiumAmount", "totalPayable", "noClaimDiscount"]
+    },
+    "insurerAndPolicyDetails": {
+      "type": "object",
+      "properties": {
+        "insurerName": {
+          "type": "string",
+          "description": "Company providing the policy."
+        },
+        "policyNumber": {
+          "type": "string",
+          "description": "Unique policy identifier."
+        },
+        "periodOfInsurance": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date"
+            },
+            "end": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "required": ["start", "end"],
+          "description": "Start and end dates."
+        },
+        "dateOfIssue": {
+          "type": "string",
+          "format": "date",
+          "description": "When the policy was issued."
+        }
+      },
+      "required": ["insurerName", "policyNumber", "periodOfInsurance"]
+    },
+    "additionalEndorsements": {
+      "type": "object",
+      "properties": {
+        "endorsements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of special terms or exclusions."
+        },
+        "hirePurchaseMortgagee": {
+          "type": "string",
+          "description": "Any financial interest parties."
+        }
+      }
+    }
+  },
+  "required": ["policyholder", "vehicle", "coverage", "premiumAndDiscounts", "insurerAndPolicyDetails"]
+}
