@@ -27,7 +27,11 @@
           "description": "List of specified drivers."
         }
       },
-      "required": ["name", "address", "occupation"]
+      "required": [
+        "name",
+        "address",
+        "occupation"
+      ]
     },
     "vehicle": {
       "type": "object",
@@ -69,7 +73,14 @@
           "description": "Insured's declared value in HKD."
         }
       },
-      "required": ["registrationMark", "makeAndModel", "yearOfManufacture", "chassisNumber", "seatingCapacity", "bodyType"]
+      "required": [
+        "registrationMark",
+        "makeAndModel",
+        "yearOfManufacture",
+        "chassisNumber",
+        "seatingCapacity",
+        "bodyType"
+      ]
     },
     "coverage": {
       "type": "object",
@@ -88,7 +99,10 @@
               "type": "number"
             }
           },
-          "required": ["bodilyInjury", "propertyDamage"],
+          "required": [
+            "bodilyInjury",
+            "propertyDamage"
+          ],
           "description": "Maximum payout for third-party claims."
         },
         "excess": {
@@ -110,7 +124,19 @@
           "description": "Deductible amounts."
         },
         "limitationsOnUse": {
-          "type": "string",
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of usage restriction clauses."
+            }
+          },
+          "required": [
+            "details"
+          ],
           "description": "Restrictions on vehicle use."
         },
         "authorizedDrivers": {
@@ -118,7 +144,13 @@
           "description": "Classes of persons allowed to drive."
         }
       },
-      "required": ["typeOfCover", "liabilityLimits", "excess", "limitationsOnUse", "authorizedDrivers"]
+      "required": [
+        "typeOfCover",
+        "liabilityLimits",
+        "excess",
+        "limitationsOnUse",
+        "authorizedDrivers"
+      ]
     },
     "premiumAndDiscounts": {
       "type": "object",
@@ -142,13 +174,20 @@
               "type": "number"
             },
             "ia": {
-              "type": ["number", "string"]
+              "type": [
+                "number",
+                "string"
+              ]
             }
           },
           "description": "Additional charges."
         }
       },
-      "required": ["premiumAmount", "totalPayable", "noClaimDiscount"]
+      "required": [
+        "premiumAmount",
+        "totalPayable",
+        "noClaimDiscount"
+      ]
     },
     "insurerAndPolicyDetails": {
       "type": "object",
@@ -173,7 +212,10 @@
               "format": "date"
             }
           },
-          "required": ["start", "end"],
+          "required": [
+            "start",
+            "end"
+          ],
           "description": "Start and end dates."
         },
         "dateOfIssue": {
@@ -182,7 +224,11 @@
           "description": "When the policy was issued."
         }
       },
-      "required": ["insurerName", "policyNumber", "periodOfInsurance"]
+      "required": [
+        "insurerName",
+        "policyNumber",
+        "periodOfInsurance"
+      ]
     },
     "additionalEndorsements": {
       "type": "object",
@@ -201,5 +247,11 @@
       }
     }
   },
-  "required": ["policyholder", "vehicle", "coverage", "premiumAndDiscounts", "insurerAndPolicyDetails"]
+  "required": [
+    "policyholder",
+    "vehicle",
+    "coverage",
+    "premiumAndDiscounts",
+    "insurerAndPolicyDetails"
+  ]
 }

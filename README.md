@@ -90,10 +90,7 @@ Content-Type: multipart/form-data
 
 Upload a PDF file:
 ```bash
-curl -X POST "http://localhost:8000/extract" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@path/to/policy.pdf"
+curl -X POST "http://localhost:8000/extract" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "file=@policy-docs/test12.pdf" -o out_test12.json
 ```
 
 Response format:

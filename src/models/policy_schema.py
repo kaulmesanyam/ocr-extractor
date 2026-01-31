@@ -37,12 +37,17 @@ class Excess(BaseModel):
     unnamedDriver: Optional[float] = Field(default=None, description="Unnamed driver excess")
 
 
+class LimitationsOnUse(BaseModel):
+    """Usage restrictions"""
+    details: List[str] = Field(..., description="List of usage restriction clauses")
+
+
 class Coverage(BaseModel):
     """Coverage details"""
     typeOfCover: str = Field(..., description="Level of insurance (e.g., third party only, comprehensive)")
     liabilityLimits: LiabilityLimits = Field(..., description="Maximum payout for third-party claims")
     excess: Excess = Field(..., description="Deductible amounts")
-    limitationsOnUse: str = Field(..., description="Restrictions on vehicle use")
+    limitationsOnUse: LimitationsOnUse = Field(..., description="Restrictions on vehicle use")
     authorizedDrivers: str = Field(..., description="Classes of persons allowed to drive")
 
 

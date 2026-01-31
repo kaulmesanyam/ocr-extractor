@@ -1,0 +1,56 @@
+{
+    "success": true,
+    "data": {
+        "policyholder": {
+            "name": "LI CHEUK TAT",
+            "address": "C/O BERLIN UNDERWRITERS LTD, NORTH POINT, HONG KONG",
+            "occupation": "RETAIL (NON-MOTOR)"
+        },
+        "vehicle": {
+            "registrationMark": "WW8687",
+            "makeAndModel": "TESLA MODEL 3",
+            "yearOfManufacture": 2020,
+            "chassisNumber": "5YJ3F7EB9LF747794",
+            "seatingCapacity": 5,
+            "bodyType": "SALOON"
+        },
+        "coverage": {
+            "liabilityLimits": {
+                "bodilyInjury": 100000000,
+                "propertyDamage": 2000000
+            },
+            "excess": {
+                "thirdPartyProperty": 10000,
+                "youngDriver": 20000,
+                "inexperiencedDriver": 20000,
+                "unnamedDriver": 30000
+            },
+            "typeOfCover": "THIRD PARTY ONLY",
+            "limitationsOnUse": "USE ONLY FOR SOCIAL DOMESTIC AND PLEASURE PURPOSES AND FOR THE POLICYHOLDER'S BUSINESS OR PROFESSION. THE POLICY DOES NOT COVER USE FOR HIRE OR REWARD RACING PACEMAKING RELIABILITY TRIAL SPEED TESTING NOR USE FOR ANY PURPOSE IN CONNECTION WITH THE MOTOR TRADE.",
+            "authorizedDrivers": "THE POLICYHOLDER. ANY OTHER PERSON WHO IS DRIVING ON THE POLICYHOLDER'S ORDER OR WITH HIS PERMISSION. PROVIDED THAT THE PERSON DRIVING HOLDS A LICENCE TO DRIVE THE MOTOR VEHICLE OR HAS HELD AND IS NOT DISQUALIFIED FOR HOLDING OR OBTAINING SUCH A LICENCE."
+        },
+        "premiumAndDiscounts": {
+            "levies": {
+                "mib": 107.54
+            },
+            "premiumAmount": 3584.6,
+            "totalPayable": 3692.14,
+            "noClaimDiscount": 60
+        },
+        "insurerAndPolicyDetails": {
+            "periodOfInsurance": {
+                "start": "01/11/2025",
+                "end": "31/10/2026"
+            },
+            "insurerName": "Zurich Insurance Company Ltd",
+            "policyNumber": "ZPP4122781ZC",
+            "dateOfIssue": "20/10/2025"
+        },
+        "additionalEndorsements": {}
+    },
+    "validation": {
+        "is_valid": true,
+        "errors": [],
+        "missing_fields": []
+    }
+}

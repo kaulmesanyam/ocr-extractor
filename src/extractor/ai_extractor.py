@@ -87,7 +87,7 @@ For arrays, use comma-separated values (e.g., "policyholder.namedDrivers: Driver
 CRITICAL - Required fields that MUST be extracted (use "UNKNOWN" if truly not found):
 - policyholder.name, policyholder.address, policyholder.occupation, policyholder.namedDrivers (optional)
 - vehicle.registrationMark, vehicle.makeAndModel, vehicle.yearOfManufacture, vehicle.chassisNumber, vehicle.engineNumber (optional), vehicle.cubicCapacity (optional), vehicle.seatingCapacity, vehicle.bodyType, vehicle.estimatedValue (optional)
-- coverage.typeOfCover, coverage.liabilityLimits.bodilyInjury, coverage.liabilityLimits.propertyDamage, coverage.excess.thirdPartyProperty (optional), coverage.excess.youngDriver (optional), coverage.excess.inexperiencedDriver (optional), coverage.excess.unnamedDriver (optional), coverage.limitationsOnUse, coverage.authorizedDrivers
+- coverage.typeOfCover, coverage.liabilityLimits.bodilyInjury, coverage.liabilityLimits.propertyDamage, coverage.excess.thirdPartyProperty (optional), coverage.excess.youngDriver (optional), coverage.excess.inexperiencedDriver (optional), coverage.excess.unnamedDriver (optional), coverage.limitationsOnUse.details, coverage.authorizedDrivers
 - premiumAndDiscounts.premiumAmount, premiumAndDiscounts.totalPayable, premiumAndDiscounts.noClaimDiscount (as number, e.g., 60 for 60%), premiumAndDiscounts.levies.mib (optional), premiumAndDiscounts.levies.ia (optional)
 - insurerAndPolicyDetails.insurerName, insurerAndPolicyDetails.policyNumber, insurerAndPolicyDetails.periodOfInsurance.start, insurerAndPolicyDetails.periodOfInsurance.end, insurerAndPolicyDetails.dateOfIssue (optional)
 - additionalEndorsements.endorsements (optional, comma-separated), additionalEndorsements.hirePurchaseMortgagee (optional)
@@ -99,14 +99,20 @@ SPECIAL INSTRUCTIONS FOR CRITICAL FIELDS:
    - "business or profession"
    - "use only for..."
    - "restrictions on use"
-   Extract the FULL sentence or paragraph describing usage restrictions. If you find ANY text about usage, extract it. If truly not found, use "UNKNOWN - standard usage restrictions apply"
+   - "POLICY LIABILITY LIMITS ANY ONE EVENT" (or similar headers)
+   - "Terms of cover"
+   CRITICAL: Do NOT extract the header itself. Extract the lines of text immediately FOLLOWING these headers (often limits, e.g., "Third Party Death...", "Third party Property...").
+   Extract these lines into "coverage.limitationsOnUse.details" as a comma-separated list (val1, val2). 
+   If you find ANY text about usage or limits, extract it. If truly not found, use "UNKNOWN - standard usage restrictions apply"
 
 2. coverage.authorizedDrivers: This is ALWAYS present. Look for phrases like:
    - "the policyholder"
    - "any person driving with permission"
    - "authorized drivers"
    - "who may drive"
-   Extract the FULL description. If you find ANY text about who can drive, extract it. If truly not found, use "UNKNOWN - standard driver authorization applies"
+   - "Named driver" or "Named driver(s)"
+   CRITICAL: Do NOT extract the header "Named driver(s)". Extract the ACTUAL NAMES listed next to or below it (e.g., "Kung Wai Kit", "TSUI WING KWONG"). 
+   If you find ANY text about who can drive, extract it. If truly not found, use "UNKNOWN - standard driver authorization applies"
 
 3. insurerAndPolicyDetails.insurerName: Search the ENTIRE document including headers, footers, and first page. Look for company names, insurer names, or insurance company logos/text. Common patterns: "Insurance Company", "Insurance Ltd", company names in headers.
 
@@ -164,12 +170,13 @@ Policy Document Text:
 CRITICAL INSTRUCTIONS:
 1. Read through the ENTIRE document text carefully - information may be on any page
 2. Search for ALL required fields listed in the system prompt
-3. For coverage.limitationsOnUse and coverage.authorizedDrivers: These are ALWAYS present in insurance documents, even if they look like standard boilerplate. Extract the full text describing usage restrictions and authorized drivers.
-4. For insurerAndPolicyDetails.insurerName: Search headers, footers, company logos, and all pages. The insurer name is always present somewhere in the document.
-5. For vehicle and policyholder details: Check tables, schedules, and structured sections throughout the document.
-6. For premium information: Look for premium tables, payment summaries, or financial sections.
-7. If you encounter REDACTED, BLACKED OUT, or MASKED fields (showing as ***, [REDACTED], black boxes, etc.), use "REDACTED" as the value - do NOT try to guess or infer the value.
-8. If the document contains Chinese text, extract information from both English and Chinese sections. Look for bilingual labels.
+3. For coverage.limitationsOnUse: Check under "POLICY LIABILITY LIMITS ANY ONE EVENT" or "Terms of cover". Extract the content *following* the header.
+4. For coverage.authorizedDrivers: Look for "Authorized Drivers" or "Named driver(s)". Extract the *names* listed, not the header title.
+5. For insurerAndPolicyDetails.insurerName: Search headers, footers, company logos, and all pages. The insurer name is always present somewhere in the document.
+6. For vehicle and policyholder details: Check tables, schedules, and structured sections throughout the document.
+7. For premium information: Look for premium tables, payment summaries, or financial sections.
+8. If you encounter REDACTED, BLACKED OUT, or MASKED fields (showing as ***, [REDACTED], black boxes, etc.), use "REDACTED" as the value - do NOT try to guess or infer the value.
+9. If the document contains Chinese text, extract information from both English and Chinese sections. Look for bilingual labels.
 
 Return all extracted information as KEY-VALUE PAIRS (one per line) as described in the system prompt.
 For required fields that cannot be found, use "UNKNOWN" (not null, not empty) to ensure the data structure is complete.
@@ -267,12 +274,15 @@ For fields that are REDACTED, use "REDACTED" as the value."""
         final_key = keys[-1]
         
         # Handle special cases
-        if final_key == "namedDrivers" or final_key == "endorsements":
+        if final_key == "namedDrivers" or final_key == "endorsements" or final_key == "details":
             # Parse comma-separated array values
-            if value and value != "N/A":
+            if value and value != "N/A" and "UNKNOWN - standard" not in value:
                 current[final_key] = [v.strip() for v in value.split(',') if v.strip()]
             else:
-                current[final_key] = []
+                if value and "UNKNOWN - standard" in value:
+                    current[final_key] = [value] # Keep the unknown message as a single item
+                else:
+                    current[final_key] = []
         elif final_key in ["yearOfManufacture", "seatingCapacity"]:
             # Parse integers
             try:
@@ -347,7 +357,9 @@ For fields that are REDACTED, use "REDACTED" as the value."""
             },
             "coverage": {
                 "typeOfCover": "UNKNOWN",
-                "limitationsOnUse": "UNKNOWN - standard usage restrictions apply",
+                "limitationsOnUse": {
+                    "details": ["UNKNOWN - standard usage restrictions apply"]
+                },
                 "authorizedDrivers": "UNKNOWN - standard driver authorization applies",
                 "liabilityLimits": {
                     "bodilyInjury": 0,
@@ -404,6 +416,12 @@ For fields that are REDACTED, use "REDACTED" as the value."""
             elif key == "excess":
                 if "excess" not in data["coverage"]:
                     data["coverage"]["excess"] = {}
+            elif key == "limitationsOnUse":
+                if "limitationsOnUse" not in data["coverage"]:
+                    data["coverage"]["limitationsOnUse"] = default
+                # Ensure details exists if object exists
+                elif "details" not in data["coverage"]["limitationsOnUse"]:
+                    data["coverage"]["limitationsOnUse"]["details"] = default["details"]
             else:
                 if key not in data["coverage"] or data["coverage"].get(key) is None:
                     data["coverage"][key] = default
